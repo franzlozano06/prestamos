@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo listo | Desembolso procesado</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap');
+
+    :root {
+      font-family: 'Nunito Sans', Arial, sans-serif;
+      color: #24105f;
+      background: #ffffff;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: #ffffff;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* ---------- Confeti cayendo ---------- */
+    .confetti-rain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -30px;
+      display: block;
+      border-radius: 2px;
+      opacity: 0.95;
+      animation-name: confetti-fall;
+      animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1);
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+      will-change: transform, top, opacity;
+    }
+
+    .confetti-piece.is-circle {
+      border-radius: 50%;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translate(0, -10vh) rotate(0deg);
+        opacity: 1;
+      }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% {
+        transform: translate(var(--drift), 110vh) rotate(var(--rotate));
+        opacity: 0;
+      }
+    }
+
+    /* ---------- Ventana del asesor ---------- */
+    .advisor-modal-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(36, 16, 95, 0.46);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      animation: layer-in 380ms ease-out both;
+      display: none;
+    }
+
+    .advisor-modal-layer.show {
+      display: grid;
+    }
+
+    .advisor-modal {
+      position: relative;
+      width: min(100%, 440px);
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding: 50px 36px 42px;
+      text-align: center;
+      border-radius: 30px;
+      background: linear-gradient(165deg, #ffffff 0%, #f9f5fc 100%);
+      box-shadow: 0 28px 60px rgba(36, 16, 95, 0.32);
+      animation: modal-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .advisor-modal-icon {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 22px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, #4a1180 0%, #7e3fc7 100%);
+      border-radius: 50%;
+      box-shadow: 0 12px 26px rgba(68, 17, 119, 0.3);
+    }
+
+    .advisor-modal-icon svg {
+      width: 42px;
+      height: 42px;
+    }
+
+    .advisor-icon-ring {
+      position: absolute;
+      inset: -8px;
+      border: 3px solid rgba(126, 63, 199, 0.35);
+      border-radius: 50%;
+      animation: ring-pulse 2.2s ease-out infinite;
+    }
+
+    .advisor-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 16px;
+      color: #4a1180;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      border-radius: 999px;
+      background: rgba(193, 165, 233, 0.2);
+    }
+
+    .advisor-modal h2 {
+      margin: 0 0 16px;
+      color: #251060;
+      font-size: clamp(26px, 4.5vw, 32px);
+      font-weight: 800;
+      line-height: 1.18;
+      letter-spacing: -0.9px;
+    }
+
+    .advisor-modal-message {
+      margin: 0 0 24px;
+      color: #5a527a;
+      font-size: clamp(16px, 2.4vw, 18px);
+      font-weight: 600;
+      line-height: 1.55;
+      letter-spacing: -0.2px;
+    }
+
+    .advisor-modal-message strong {
+      color: #4a1180;
+      font-weight: 800;
+    }
+
+    .advisor-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      padding: 12px 18px;
+      color: #4a1180;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 14px;
+      background: rgba(91, 187, 162, 0.1);
+    }
+
+    .advisor-note svg {
+      width: 18px;
+      height: 18px;
+      color: #5bbba2;
+      flex-shrink: 0;
+    }
+
+    .advisor-waiting {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .advisor-dots {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #7e3fc7;
+      animation: dots-bounce 1.4s ease-in-out infinite;
+    }
+
+    .advisor-dots:nth-child(2) { animation-delay: 0.2s; }
+    .advisor-dots:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dots-bounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1.1); opacity: 1; }
+    }
+
+    @keyframes layer-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes ring-pulse {
+      0% { opacity: 0.7; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.5); }
+    }
+
+    /* ---------- Página ---------- */
+    .confirmation-page {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 42px 24px 50px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(91, 187, 162, 0.07), transparent 38%),
+        radial-gradient(circle at 88% 92%, rgba(183, 151, 232, 0.1), transparent 42%),
+        #ffffff;
+    }
+
+    .confirmation-shell {
+      position: relative;
+      z-index: 50;
+      width: min(100%, 692px);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .success-visual {
+      position: relative;
+      width: 290px;
+      height: 304px;
+      margin: 0 auto 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: appear 650ms ease-out both;
+    }
+
+    .success-halo {
+      width: 250px;
+      height: 250px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #eff8f6;
+      box-shadow: 0 0 0 14px rgba(91, 187, 162, 0.08);
+      animation: halo-breathe 3s ease-in-out infinite;
+    }
+
+    .success-circle {
+      width: 186px;
+      height: 186px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #ffffff;
+      background: #5bbba2;
+      box-shadow: 0 12px 26px rgba(91, 187, 162, 0.28);
+    }
+
+    .success-circle svg {
+      width: 115px;
+      height: 115px;
+      animation: check-in 700ms 220ms cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    .confetti-dot,
+    .confetti-star {
+      position: absolute;
+      display: block;
+    }
+
+    .confetti-dot {
+      border-radius: 999px;
+    }
+
+    .dot-teal {
+      top: 36px;
+      left: 30px;
+      width: 18px;
+      height: 18px;
+      background: #9edbd0;
+    }
+
+    .dot-lilac {
+      top: 19px;
+      right: 32px;
+      width: 18px;
+      height: 18px;
+      background: #c7b0ec;
+    }
+
+    .dot-soft-lilac {
+      bottom: 46px;
+      left: 1px;
+      width: 17px;
+      height: 17px;
+      background: #ded1f2;
+    }
+
+    .dot-deep-lilac {
+      right: 2px;
+      bottom: 52px;
+      width: 18px;
+      height: 18px;
+      background: #c3a5e9;
+    }
+
+    .confetti-star {
+      width: 30px;
+      height: 30px;
+      color: #b797e8;
+      fill: #b797e8;
+    }
+
+    .star-left {
+      top: 108px;
+      left: 0;
+    }
+
+    .star-right {
+      top: 106px;
+      right: 1px;
+    }
+
+    .confirmation-heading {
+      text-align: center;
+      animation: appear 650ms 100ms ease-out both;
+    }
+
+    .confirmation-heading h1 {
+      margin: 0;
+      color: #251060;
+      font-size: clamp(43px, 7vw, 57px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.9px;
+    }
+
+    .confirmation-heading p {
+      margin: 20px 0 0;
+      color: #716b87;
+      font-size: clamp(23px, 3.5vw, 29px);
+      font-weight: 600;
+      line-height: 1.3;
+      letter-spacing: -0.55px;
+    }
+
+    .status-card {
+      min-height: 205px;
+      margin-top: 51px;
+      padding: 31px 36px;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      border: 2px solid #e8dbf7;
+      border-radius: 27px;
+      background: #f8f4fc;
+      animation: appear 650ms 180ms ease-out both;
+      transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+    }
+
+    .status-card:hover {
+      border-color: #d3c0f0;
+      box-shadow: 0 14px 30px rgba(68, 17, 119, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .clock-icon {
+      flex: 0 0 auto;
+      width: 76px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      color: #271061;
+      border: 6px solid #271061;
+      border-radius: 50%;
+    }
+
+    .clock-icon svg {
+      width: 46px;
+      height: 46px;
+    }
+
+    .status-card h2 {
+      margin: 0;
+      color: #24105f;
+      font-size: clamp(24px, 3.5vw, 31px);
+      font-weight: 800;
+      line-height: 1.22;
+      letter-spacing: -0.8px;
+    }
+
+    .status-card p {
+      margin: 12px 0 0;
+      color: #716b87;
+      font-size: clamp(22px, 3.2vw, 28px);
+      font-weight: 600;
+      line-height: 1.5;
+      letter-spacing: -0.55px;
+    }
+
+    .confirm-button {
+      width: 100%;
+      min-height: 130px;
+      margin-top: 59px;
+      border: 0;
+      border-radius: 26px;
+      color: #ffffff;
+      background: linear-gradient(105deg, #4a1180 0%, #501184 48%, #45117d 100%);
+      box-shadow: 0 14px 17px rgba(68, 17, 119, 0.24);
+      cursor: pointer;
+      font-size: clamp(33px, 4.5vw, 40px);
+      font-weight: 800;
+      line-height: 1;
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+      animation: appear 650ms 260ms ease-out both;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .confirm-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+      transform: skewX(-20deg);
+      animation: shine 4.5s ease-in-out infinite;
+    }
+
+    .confirm-button:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 18px 25px rgba(68, 17, 119, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .confirm-button:active {
+      box-shadow: 0 8px 12px rgba(68, 17, 119, 0.22);
+      transform: translateY(2px);
+    }
+
+    .confirm-button:focus-visible {
+      outline: 4px solid #c3a5e9;
+      outline-offset: 5px;
+    }
+
+    @keyframes shine {
+      0%, 60% { left: -120%; }
+      100% { left: 140%; }
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes check-in {
+      from { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+      to { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    @keyframes halo-breathe {
+      0%, 100% { box-shadow: 0 0 0 14px rgba(91, 187, 162, 0.08); }
+      50% { box-shadow: 0 0 0 22px rgba(91, 187, 162, 0.04); }
+    }
+
+    @media (max-width: 560px) {
+      .confirmation-page {
+        padding: 30px 18px 35px;
+      }
+
+      .advisor-modal {
+        padding: 42px 24px 34px;
+        border-radius: 24px;
+      }
+
+      .advisor-modal-icon {
+        width: 76px;
+        height: 76px;
+      }
+
+      .advisor-modal-icon svg {
+        width: 38px;
+        height: 38px;
+      }
+
+      .advisor-modal-message {
+        font-size: 16px;
+      }
+
+      .success-visual {
+        width: 250px;
+        height: 260px;
+        margin-bottom: 28px;
+      }
+
+      .success-halo {
+        width: 218px;
+        height: 218px;
+      }
+
+      .success-circle {
+        width: 162px;
+        height: 162px;
+      }
+
+      .success-circle svg {
+        width: 98px;
+        height: 98px;
+      }
+
+      .dot-teal { top: 27px; left: 14px; }
+      .dot-lilac { top: 12px; right: 20px; }
+      .dot-soft-lilac { bottom: 29px; left: 0; }
+      .dot-deep-lilac { right: 0; bottom: 37px; }
+      .star-left { top: 94px; left: -5px; }
+      .star-right { top: 91px; right: -6px; }
+
+      .confirmation-heading h1 {
+        letter-spacing: -1.3px;
+      }
+
+      .confirmation-heading p {
+        margin-top: 14px;
+        font-size: 21px;
+      }
+
+      .status-card {
+        min-height: 0;
+        margin-top: 34px;
+        padding: 24px 20px;
+        gap: 18px;
+        border-radius: 22px;
+      }
+
+      .clock-icon {
+        width: 58px;
+        height: 58px;
+        border-width: 5px;
+      }
+
+      .clock-icon svg {
+        width: 35px;
+        height: 35px;
+      }
+
+      .status-card h2 {
+        font-size: 20px;
+        letter-spacing: -0.4px;
+      }
+
+      .status-card p {
+        margin-top: 8px;
+        font-size: 18px;
+        line-height: 1.4;
+        letter-spacing: -0.2px;
+      }
+
+      .desktop-break {
+        display: none;
+      }
+
+      .confirm-button {
+        min-height: 92px;
+        margin-top: 32px;
+        border-radius: 20px;
+        font-size: 31px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .confetti-rain { display: none; }
+      .advisor-icon-ring,
+      .success-halo,
+      .confirm-button::after {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="confirmation-page" id="mainPage">
+    <div class="confetti-rain" id="confettiRain" aria-hidden="true"></div>
+
+    <div class="advisor-modal-layer" id="advisorLayer" role="presentation">
+      <section class="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title">
+        <div class="advisor-modal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11v2a2 2 0 0 0 2 2h1V9H5a2 2 0 0 0-2 2Z"/>
+            <path d="M18 9h1a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1V9Z"/>
+            <path d="M6 9a6 6 0 0 1 12 0v7a3 3 0 0 1-3 3h-2"/>
+          </svg>
+          <span class="advisor-icon-ring"></span>
+        </div>
+        <span class="advisor-kicker">Atención personalizada</span>
+        <h2 id="advisor-title">Estamos aquí para ayudarte</h2>
+        <p class="advisor-modal-message">
+          Hola, tu solicitud está avanzando correctamente. En breve un <strong>asesor personalizado</strong> se comunicará contigo para acompañarte y realizar tu desembolso.
+        </p>
+        <div class="advisor-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Por favor, mantén tu teléfono disponible.</span>
+        </div>
+        <div class="advisor-waiting">
+          <span class="advisor-dots"></span>
+          <span class="advisor-dots"></span>
+          <span class="advisor-dots"></span>
+        </div>
+      </section>
+    </div>
+
+    <div class="confirmation-shell">
+      <section class="success-visual" aria-label="Desembolso procesado">
+        <span class="confetti-dot dot-teal"></span>
+        <span class="confetti-dot dot-lilac"></span>
+        <span class="confetti-dot dot-soft-lilac"></span>
+        <span class="confetti-dot dot-deep-lilac"></span>
+        <svg class="confetti-star star-left" viewBox="0 0 24 24" fill="currentColor">
+          <path d="m12 1 2.3 7.7L22 11l-7.7 2.3L12 21l-2.3-7.7L2 11l7.7-2.3L12 1Z"/>
+        </svg>
+        <svg class="confetti-star star-right" viewBox="0 0 24 24" fill="currentColor">
+          <path d="m12 1 2.3 7.7L22 11l-7.7 2.3L12 21l-2.3-7.7L2 11l7.7-2.3L12 1Z"/>
+        </svg>
+        <div class="success-halo">
+          <div class="success-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <header class="confirmation-heading">
+        <h1>¡Todo listo!</h1>
+        <p>Tu desembolso está siendo procesado.</p>
+      </header>
+
+      <section class="status-card" aria-label="Estado del desembolso">
+        <div class="clock-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <div>
+          <h2>Recibirás tu dinero en minutos</h2>
+          <p>Te notificaremos cuando el desembolso<br class="desktop-break" /> se haya completado.</p>
+        </div>
+      </section>
+
+      <button class="confirm-button" type="button">Entendido</button>
+    </div>
+  </main>
+
+  <script>
+    const CONFETTI_COLORS = ['#5bbba2', '#9edbd0', '#c7b0ec', '#ded1f2', '#c3a5e9', '#b797e8', '#7e3fc7', '#4a1180'];
+
+    function createConfetti() {
+      const confettiRain = document.getElementById('confettiRain');
+      const total = 90;
+
+      for (let i = 0; i < total; i++) {
+        const piece = document.createElement('span');
+        piece.className = `confetti-piece ${i % 3 === 0 ? 'is-circle' : 'is-rect'}`;
+
+        const left = Math.random() * 100;
+        const delay = Math.random() * 1.5;
+        const duration = 3.2 + Math.random() * 3.2;
+        const size = 7 + Math.random() * 11;
+        const color = CONFETTI_COLORS[i % CONFETTI_COLORS.length];
+        const rotate = Math.random() * 360;
+        const drift = -40 + Math.random() * 80;
+
+        piece.style.left = `${left}%`;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size * (i % 3 === 0 ? 1 : 0.42)}px`;
+        piece.style.background = color;
+        piece.style.animationDelay = `${delay}s`;
+        piece.style.animationDuration = `${duration}s`;
+        piece.style.setProperty('--rotate', `${rotate}deg`);
+        piece.style.setProperty('--drift', `${drift}px`);
+
+        confettiRain.appendChild(piece);
+      }
+
+      setTimeout(() => {
+        confettiRain.style.display = 'none';
+      }, 8000);
+    }
+
+    function showAdvisor() {
+      const advisorLayer = document.getElementById('advisorLayer');
+      advisorLayer.classList.add('show');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      createConfetti();
+      setTimeout(showAdvisor, 4000);
+
+      document.querySelector('.confirm-button').addEventListener('click', () => {
+        alert('¡Gracias por confiar en nosotros!');
+      });
+    });
+  </script>
+</body>
+</html>

